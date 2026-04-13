@@ -71,6 +71,17 @@ class _HomePageState extends State<HomePage> {
         imagePath = 'assets/images/${message.data['image'] ?? 'default'}.png';
       });
     });
+    _initFirebaseMessaging();
+  }
+
+  Future<void> _initFirebaseMessaging() async {
+    final settings = await FirebaseMessaging.instance.requestPermission(
+      alert: true,
+      badge: true,
+      sound: true,
+    );
+    final token = await FirebaseMessaging.instance.getToken();
+    debugPrint('FCM Token: $token');
   }
 
 
