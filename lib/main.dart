@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'firebase_options.dart';
 
 void main() async {
@@ -9,6 +10,31 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
   runApp(const MyApp());
+}
+
+class FCMService {
+  final FirebaseMessaging messaging = FirebaseMessaging.instance;
+
+  Future<void> initialize({required void Function(RemoteMessage) onData}) async {
+    await messaging.requestPermission(alert: true, badge: true, sound: true);
+
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      onData(message);
+    });
+
+    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+      onData(message);
+    });
+
+    final initialMessage = await messaging.getInitialMessage();
+    if (initialMessage != null) {
+      onData(initialMessage);
+    }
+  }
+
+  Future<String?> getToken() {
+    return messaging.getToken();
+  }
 }
 
 class MyApp extends StatelessWidget {
