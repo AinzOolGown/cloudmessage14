@@ -58,6 +58,22 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  final FCMService _fcmService = FCMService();
+  String statusText = 'Waiting for a cloud message';
+  String imagePath = 'assets/images/default.png';
+
+  @override
+  void initState() {
+    super.initState();
+    _fcmService.initialize(onData: (message) {
+      setState(() {
+        statusText = message.notification?.title ?? 'Payload received';
+        imagePath = 'assets/images/${message.data['image'] ?? 'default'}.png';
+      });
+    });
+  }
+
+
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _priceController = TextEditingController();
 
